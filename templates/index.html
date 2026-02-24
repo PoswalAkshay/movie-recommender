@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Netflix AI Movie Recommender</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+body{background:#141414;color:white}
+header{background:#000;padding:20px;text-align:center;font-size:28px;color:#e50914}
+.hero{text-align:center;padding:40px}
+
+input{padding:12px;width:300px;border:none;border-radius:4px}
+button{padding:12px 18px;background:#e50914;color:white;border:none;border-radius:4px}
+
+.movies{display:flex;justify-content:center;flex-wrap:wrap;padding:30px}
+.card{margin:15px;width:200px;text-align:center;transition:.3s}
+.card img{width:100%;border-radius:8px}
+.card:hover{transform:scale(1.08)}
+
+#suggestions{background:#222;width:300px;margin:auto;text-align:left}
+#suggestions div{padding:6px;cursor:pointer}
+#suggestions div:hover{background:#e50914}
+
+.error{color:red;text-align:center}
+</style>
+</head>
+
+<body>
+
+<header>NETFLIX AI MOVIE RECOMMENDER</header>
+
+<div class="hero">
+<form method="POST">
+<input type="text" id="movieInput" name="movie" placeholder="Search movie..." autocomplete="off">
+<button type="submit">Search</button>
+</form>
+<div id="suggestions"></div>
+{% if error %}<p class="error">{{error}}</p>{% endif %}
+</div>
+
+<h2 style="text-align:center">🔥 Trending Movies</h2>
+<div class="movies">
+{% for i in range(10) %}
+<div class="card">
+<img src="{{t_posters[i]}}">
+<p>{{t_names[i]}}</p>
+<p>⭐ {{t_ratings[i]}} | {{t_years[i]}}</p>
+</div>
+{% endfor %}
+</div>
+
+{% if names %}
+<h2 style="text-align:center">🎯 Recommended Movies</h2>
+<div class="movies">
+{% for i in range(5) %}
+<div class="card">
+<img src="{{posters[i]}}">
+<p>{{names[i]}}</p>
+<p>⭐ {{ratings[i]}} | {{years[i]}}</p>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<script>
+const input=document.getElementById("movieInput");
+const box=document.getElementById("suggestions");
+input.addEventListener("keyup",async()=>{
+let q=input.value;
+if(q.length<2){box.innerHTML="";return;}
+let res=await fetch(`/suggest?q=${q}`);
+let data=await res.json();
+box.innerHTML=data.map(m=>`<div>${m}</div>`).join("");
+document.querySelectorAll("#suggestions div").forEach(el=>{
+el.onclick=()=>{input.value=el.innerText;box.innerHTML="";}
+});
+});
+</script>
+
+</body>
+</html>
