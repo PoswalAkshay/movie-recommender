@@ -2,10 +2,12 @@
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
 import requests
+import os
 
 app = Flask(__name__)
 
-API_KEY = "c411344f7be153eec44c865e976568d1"
+# Read TMDB API key from environment for deployments (e.g. Render)
+API_KEY = os.environ.get("TMDB_API_KEY", "c411344f7be153eec44c865e976568d1")
 
 # load dataset
 movies = pd.read_csv("tmdb_5000_movies.csv")
@@ -122,4 +124,7 @@ def index():
                            t_ratings=t_ratings,
                            t_years=t_years)
 
-app.run(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "False").lower() in ("1", "true", "yes")
+    app.run(host="0.0.0.0", port=port, debug=debug)

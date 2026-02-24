@@ -1,2 +1,7 @@
+#.env should never be committed
+.env
+__pycache__/
+*.pyc
+instance/
 similarity.pkl
 movies.pkl
